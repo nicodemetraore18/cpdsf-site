@@ -212,6 +212,55 @@
     .center{text-align:center}
     .pill{display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(11,102,35,0.06); color:var(--earth); font-weight:700}
 
+    /* Mobile menu and additional responsive tweaks */
+    @media(max-width:880px){
+      .nav{padding:10px 16px}
+      .brand h1{font-size:16px}
+      .brand img{height:40px; width:40px}
+      .menu{
+        display:none;
+        position:absolute;
+        top:64px;
+        right:20px;
+        background:#fff;
+        padding:12px;
+        border-radius:10px;
+        box-shadow:0 10px 30px rgba(8,8,8,0.08);
+        flex-direction:column;
+        align-items:flex-end;
+        width:220px;
+      }
+      .menu a{display:block; width:100%; padding:10px 12px}
+      .hero .wrap{flex-direction:column; gap:18px; padding:28px 16px}
+      .hero h2{font-size:26px}
+      .hero{min-height:46vh}
+    }
+    @media(max-width:1100px){
+      .hero h2{font-size:32px}
+    }
+
+    /* Specific grids previously set inline */
+    .grid--about{grid-template-columns:2fr 1fr 1fr}
+    @media(max-width:980px){ .grid--about{grid-template-columns:1fr 1fr} }
+    @media(max-width:600px){ .grid--about{grid-template-columns:1fr} }
+
+    .grid--culture{grid-template-columns:1fr 1fr 1fr}
+    @media(max-width:980px){ .grid--culture{grid-template-columns:1fr 1fr} }
+    @media(max-width:600px){ .grid--culture{grid-template-columns:1fr} }
+
+    .grid--news{grid-template-columns:repeat(3,1fr)}
+    @media(max-width:980px){ .grid--news{grid-template-columns:repeat(2,1fr)} }
+    @media(max-width:600px){ .grid--news{grid-template-columns:1fr} }
+
+    /* Ensure images and media are fluid */
+    img, .card img, .gallery img, .member img, .brand img{max-width:100%; height:auto; display:block}
+    .btn-primary, .btn-member {white-space:nowrap}
+
+    /* Modal small-screen fix */
+    @media(max-width:480px){
+      .modal-card{width:94%; padding:14px}
+    }
+
   </style>
 </head>
 <body>
@@ -276,7 +325,7 @@
         <div class="muted-small">Histoire, mission et organisation</div>
       </div>
 
-      <div class="grid" style="grid-template-columns:2fr 1fr 1fr;">
+      <div class="grid grid--about">
         <article class="card" aria-label="Histoire">
           <h3>Notre histoire</h3>
           <p class="muted">Les Dozos sont des maîtres chasseurs du Mandé. La Confrérie Panafricaine des Dozos Sans Frontières fédère ces traditions et mobilise leur savoir pour la paix et la protection des populations.</p>
@@ -358,7 +407,7 @@
         <div class="muted-small">Savoirs, symboles et patrimoine</div>
       </div>
 
-      <div class="grid" style="grid-template-columns:1fr 1fr 1fr">
+      <div class="grid grid--culture">
         <div class="card">
           <h3>Origines</h3>
           <p class="muted">Les dozos puisent leurs racines dans la culture Mandé. Ils sont porteurs de rites, de musique et de savoirs ancestraux.</p>
@@ -431,7 +480,7 @@
         <div class="muted-small">Communiqués et événements récents</div>
       </div>
 
-      <div class="grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="grid grid--news">
         <article class="card">
           <h3>Communiqué officiel - Réunion panafricaine</h3>
           <p class="muted">Le bureau exécutif s'est réuni pour discuter des initiatives de sécurité et coopération...</p>
