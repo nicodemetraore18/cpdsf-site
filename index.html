@@ -124,6 +124,10 @@
       .hero .right > div{padding:14px}
     }
 
+    /* Coordinator badge image */
+    .coord-img{width:96px; height:96px; border-radius:50%; object-fit:cover; display:block; margin:0 auto 8px}
+    @media(max-width:880px){ .coord-img{width:72px; height:72px; margin-bottom:10px} }
+
     /* ---------- Main layout ---------- */
     main{max-width:var(--container); margin:36px auto; padding:0 20px}
 
@@ -315,9 +319,10 @@
         </div>
       </div>
       <div class="right" aria-hidden="true">
-        <!-- simple badge -->
-        <div style="background:rgba(255,255,255,0.08); padding:18px; border-radius:12px;">
-          <h3 style="margin:0 0 6px">Coordonnateur</h3>
+        <!-- simple badge with image -->
+        <div class="coord-badge" style="background:rgba(255,255,255,0.08); padding:18px; border-radius:12px; text-align:center;">
+          <img src="assets/member1.png" alt="Maître Yacouba Drabo" class="coord-img">
+          <h3 style="margin:8px 0 6px">Coordonnateur</h3>
           <p style="margin:0; font-weight:700">Maître Yacouba Drabo</p>
           <p class="muted-small" style="margin-top:6px">Coordonnateur panafricain</p>
         </div>
