@@ -56,6 +56,9 @@
   </script>
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Open+Sans:ital,wght@0,300;0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Performance: preconnect to font origins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <style>
     :root{
       --green:#0B6623;
@@ -336,6 +339,14 @@
     @media(max-width:600px){ .partner{width:120px} .partner img{height:64px} .partner figcaption{font-size:13px} }
 
   </style>
+  <!-- Google Analytics (GA4) - replace G-XXXXXXXXXX with your Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX', { 'send_page_view': true });
+  </script>
 </head>
 <body>
 
@@ -502,10 +513,10 @@
       <div style="margin-top:12px" class="card">
         <h3>Galerie culturelle</h3>
         <div class="gallery" aria-hidden="false">
-          <img src="assets/gallery1.jpg" alt="Cérémonie dozo">
-          <img src="assets/gallery2.jpeg" alt="Rituel dozo">
-          <img src="assets/gallery3.jpg" alt="Danse traditionnelle">
-          <img src="assets/gallery4.webp" alt="Entraide communautaire">
+          <img src="assets/gallery1.jpg" alt="Cérémonie dozo" loading="lazy">
+          <img src="assets/gallery2.jpeg" alt="Rituel dozo" loading="lazy">
+          <img src="assets/gallery3.jpg" alt="Danse traditionnelle" loading="lazy">
+          <img src="assets/gallery4.webp" alt="Entraide communautaire" loading="lazy">
         </div>
       </div>
     </section>
@@ -520,22 +531,22 @@
       <div class="members-grid">
         <!-- Sample members. Replace images and text. -->
         <div class="member">
-          <img src="assets/member1.png" alt="Coordonnateur">
+          <img src="assets/member1.png" alt="Coordonnateur" loading="lazy">
           <h4>Maître Yacouba Drabo</h4>
           <p>Coordonnateur panafricain</p>
         </div>
         <div class="member">
-          <img src="assets/member2.jpg" alt="Membre">
+          <img src="assets/member2.jpg" alt="Membre" loading="lazy">
           <h4>Norbert K.</h4>
           <p>Coordinateur national - Burkina Faso</p>
         </div>
         <div class="member">
-          <img src="assets/member3.jpg" alt="Membre">
+          <img src="assets/member3.jpg" alt="Membre" loading="lazy">
           <h4>Aïssata D.</h4>
           <p>Responsable formation - Côte d'Ivoire</p>
         </div>
         <div class="member">
-          <img src="assets/member4.jpg" alt="Membre">
+          <img src="assets/member4.jpg" alt="Membre" loading="lazy">
           <h4>Mamadou S.</h4>
           <p>Coordinateur régional - Mali</p>
         </div>
@@ -585,17 +596,17 @@
 
         <div class="card center partners">
           <figure class="partner">
-            <img src="assets/partner1.jpeg" alt="Ministère de l'Environnement" />
+            <img src="assets/partner1.jpeg" alt="Ministère de l'Environnement" loading="lazy" />
             <figcaption>Ministère de l'Environnement</figcaption>
           </figure>
 
           <figure class="partner">
-            <img src="assets/partner2.png" alt="Ministère de la Santé" />
+            <img src="assets/partner2.png" alt="Ministère de la Santé" loading="lazy" />
             <figcaption>Ministère de la Santé</figcaption>
           </figure>
 
           <figure class="partner">
-            <img src="assets/partner3.jpeg" alt="Ministère de la Sécurité" />
+            <img src="assets/partner3.jpeg" alt="Ministère de la Sécurité" loading="lazy" />
             <figcaption>Ministère de la Sécurité</figcaption>
           </figure>
         </div>
@@ -638,10 +649,10 @@
           </form>
         </div>
 
-        <aside class="card" aria-label="Coordonnées">
+          <aside class="card" aria-label="Coordonnées">
           <h3>Coordonnées</h3>
           <p class="muted">Siège : Ouagadougou, Burkina Faso</p>
-          <p class="muted">Email : contact@cpdsf.org (à définir)</p>
+          <p class="muted">Email : <a href="mailto:nicodemetraore18@gmail.com">nicodemetraore18@gmail.com</a></p>
           <p class="muted">Téléphone : +226 70 76 97 23</p>
           <hr style="margin:12px 0; border:none; height:1px; background:#f1efe8">
           <div>
@@ -737,7 +748,7 @@
     function closeModal(){ modal.classList.remove('open') }
     modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
 
-    // Contact form: client side only (replace with server endpoint or email service)
+    // Contact form: open user's mail client via mailto: for now
     function handleContact(e){
       e.preventDefault();
       const name = document.getElementById('name').value.trim();
@@ -746,9 +757,21 @@
       const message = document.getElementById('message').value.trim();
       if(!name || !email || !message) { alert('Veuillez remplir tous les champs obligatoires.'); return false; }
 
-      // For now: just show a friendly message. Later integrate with email / backend.
-      alert('Merci ' + name + ' — votre message a bien été reçu. Le secrétariat vous contactera bientôt.');
-      e.target.reset();
+      const to = 'nicodemetraore18@gmail.com';
+      const subject = '[CPDSF] ' + (document.getElementById('subject') ? document.getElementById('subject').value.trim() : 'Message du site');
+      let body = 'Nom: ' + name + '\n';
+      if(country) body += 'Pays: ' + country + '\n';
+      body += 'Email/Contact: ' + email + '\n\n';
+      body += message + '\n\n--\nEnvoyé depuis le site CPDSF';
+
+      const mailto = 'mailto:' + encodeURIComponent(to)
+                   + '?subject=' + encodeURIComponent(subject)
+                   + '&body=' + encodeURIComponent(body);
+
+      // Try to open mail client
+      window.location.href = mailto;
+      // Optionally reset form after a short delay
+      setTimeout(()=>{ try{ e.target.reset(); }catch(e){} }, 800);
       return false;
     }
 
