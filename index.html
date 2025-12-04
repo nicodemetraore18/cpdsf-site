@@ -263,6 +263,11 @@
       .modal-card{width:94%; padding:14px}
     }
 
+    /* Audio control (autoplay attempt + fallback) */
+    .audio-toggle{position:fixed; right:18px; bottom:18px; z-index:1500; background:var(--green); color:#fff; border:none; padding:10px 12px; border-radius:999px; box-shadow:0 6px 18px rgba(8,8,8,0.12); cursor:pointer; font-weight:700; display:flex; align-items:center; gap:8px}
+    .audio-toggle[hidden]{display:none}
+    @media(max-width:480px){ .audio-toggle{right:12px; bottom:12px; padding:8px 10px; font-size:14px} }
+
   </style>
 </head>
 <body>
@@ -558,7 +563,7 @@
           <h3>Coordonnées</h3>
           <p class="muted">Siège : Ouagadougou, Burkina Faso</p>
           <p class="muted">Email : contact@cpdsf.org (à définir)</p>
-          <p class="muted">Téléphone : +226 XX XX XX XX</p>
+          <p class="muted">Téléphone : +226 70 76 97 23</p>
           <hr style="margin:12px 0; border:none; height:1px; background:#f1efe8">
           <div>
             <h4 style="margin:0 0 6px">Suivez-nous</h4>
@@ -610,6 +615,10 @@
         <button style="padding:8px 12px; border-radius:8px; background:var(--green); color:#fff; border:none; font-weight:700" onclick="alert('Connexion : fonctionnalité serveur à ajouter')">Connexion</button>
       </div>
     </div>
+
+      <!-- Background audio + control -->
+      <audio id="bgAudio" src="assets/intro.mp3" preload="auto"></audio>
+      <button id="audioToggle" class="audio-toggle" hidden aria-pressed="false" aria-label="Activer la musique">▶︎ Musique</button>
   </div>
 
   <script>
@@ -658,6 +667,49 @@
 
     // Accessibility: Esc closes modal
     document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+
+    // Background audio: try autoplay, show fallback control if blocked
+    (function(){
+      const audio = document.getElementById('bgAudio');
+      const btn = document.getElementById('audioToggle');
+      if(!audio || !btn) return;
+      audio.loop = false; // short music as requested
+      audio.volume = 0.8;
+      let playing = false;
+
+      function updateButton(){
+        if(playing){ btn.textContent = '⏸️ Pause'; btn.setAttribute('aria-pressed','true'); }
+        else { btn.textContent = '▶︎ Musique'; btn.setAttribute('aria-pressed','false'); }
+      }
+
+      // Try to play on load
+      window.addEventListener('load', ()=>{
+        const playPromise = audio.play();
+        if(playPromise !== undefined){
+          playPromise.then(()=>{
+            playing = true; btn.hidden = false; updateButton();
+          }).catch(()=>{
+            // Autoplay blocked: show control so user can start music
+            playing = false; btn.hidden = false; updateButton();
+            // Try once on first user interaction
+            const tryPlay = ()=>{ audio.play().then(()=>{ playing=true; updateButton(); document.removeEventListener('click', tryPlay); document.removeEventListener('touchstart', tryPlay); }).catch(()=>{}); };
+            document.addEventListener('click', tryPlay, {once:true});
+            document.addEventListener('touchstart', tryPlay, {once:true});
+          });
+        } else {
+          // Older browsers
+          btn.hidden = false; updateButton();
+        }
+      });
+
+      btn.addEventListener('click', ()=>{
+        if(!playing){
+          audio.play().then(()=>{ playing = true; updateButton(); }).catch(()=>{ alert('La lecture automatique est bloquée. Interagissez avec la page pour activer le son.'); });
+        } else {
+          audio.pause(); playing = false; updateButton();
+        }
+      });
+    })();
   </script>
 
 </body>
