@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="fr">
 <head>
@@ -268,6 +269,11 @@
     .audio-toggle{position:fixed; right:18px; bottom:18px; z-index:1500; background:var(--green); color:#fff; border:none; padding:10px 12px; border-radius:999px; box-shadow:0 6px 18px rgba(8,8,8,0.12); cursor:pointer; font-weight:700; display:flex; align-items:center; gap:8px}
     .audio-toggle[hidden]{display:none}
     @media(max-width:480px){ .audio-toggle{right:12px; bottom:12px; padding:8px 10px; font-size:14px} }
+
+    /* Autoplay prompt overlay */
+    #autoplayPrompt{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(4,8,6,0.6); z-index:2000}
+    #autoplayPrompt .card{background:#fff; padding:18px; border-radius:12px; max-width:420px; width:calc(100% - 40px); text-align:center}
+    #autoplayPrompt button{margin-top:12px; background:var(--green); color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:700}
 
   </style>
 </head>
@@ -624,6 +630,18 @@
       <button id="openApplePlayer" class="audio-toggle" aria-pressed="false" aria-label="Afficher le player">🎵 Musique</button>
   </div>
 
+  <!-- Autoplay audio (local) used to attempt audible autoplay for 30s -->
+  <audio id="autoplayAudio" src="assets/intro.mp3" preload="auto"></audio>
+
+  <!-- Prompt shown when autoplay is blocked: user can start 30s playback -->
+  <div id="autoplayPrompt" role="dialog" aria-modal="true">
+    <div class="card">
+      <h3>Lecture automatique</h3>
+      <p>Le navigateur empêche parfois la lecture automatique. Appuyez sur le bouton ci‑dessous pour démarrer 30 secondes de musique.</p>
+      <button id="start30">Démarrer 30s</button>
+    </div>
+  </div>
+
   <script>
     // Small helpers: menu toggle, smooth scroll, modal open/close, contact handler
     document.getElementById('year').innerText = new Date().getFullYear();
@@ -687,6 +705,54 @@
       });
       // initialize
       update();
+    })();
+
+    // Attempt audible autoplay for 30s using a local audio file.
+    (function(){
+      const audio = document.getElementById('autoplayAudio');
+      const prompt = document.getElementById('autoplayPrompt');
+      const startBtn = document.getElementById('start30');
+      if(!audio) return;
+      let timeoutId = null;
+
+      function stopAfter30(){
+        if(timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(()=>{ try{ audio.pause(); }catch(e){} }, 30000);
+      }
+
+      function tryAutoplay(){
+        // ensure start at beginning
+        audio.currentTime = 0;
+        const p = audio.play();
+        if(p !== undefined){
+          p.then(()=>{ // autoplay allowed
+            stopAfter30();
+            // hide prompt if visible
+            if(prompt) prompt.style.display = 'none';
+          }).catch(()=>{
+            // autoplay blocked -> show prompt so user can start manually
+            if(prompt) prompt.style.display = 'flex';
+          });
+        } else {
+          // older browsers: show prompt
+          if(prompt) prompt.style.display = 'flex';
+        }
+      }
+
+      // If user interacts anywhere, try autoplay again (some browsers allow after interaction)
+      const interactionHandler = ()=>{ tryAutoplay(); document.removeEventListener('click', interactionHandler); document.removeEventListener('touchstart', interactionHandler); };
+      document.addEventListener('click', interactionHandler, {once:true});
+      document.addEventListener('touchstart', interactionHandler, {once:true});
+
+      // Try on load
+      window.addEventListener('load', tryAutoplay);
+
+      // Start button handler
+      if(startBtn){ startBtn.addEventListener('click', ()=>{
+        prompt.style.display = 'none';
+        audio.currentTime = 0;
+        audio.play().then(()=>{ stopAfter30(); }).catch(()=>{ alert('Impossible de lire la musique — vérifiez les permissions du navigateur.'); });
+      }); }
     })();
   </script>
 
