@@ -1,0 +1,5 @@
+User-agent: *
+Disallow:
+
+# Point crawlers to your sitemap (GitHub Pages URL).
+Sitemap: https://nicodemetraore18.github.io/cpdsf-site/sitemap.xml
