@@ -280,6 +280,14 @@
     .audio-toggle[hidden]{display:none}
     @media(max-width:480px){ .audio-toggle{right:12px; bottom:12px; padding:8px 10px; font-size:14px} }
 
+    /* Partners block: larger logos with captions */
+    .partners{display:flex; gap:28px; align-items:center; justify-content:center; flex-wrap:wrap}
+    .partner{display:flex; flex-direction:column; align-items:center; width:160px}
+    .partner img{height:84px; width:auto; object-fit:contain; opacity:1; transition:transform .18s ease, box-shadow .18s ease}
+    .partner img:hover{transform:translateY(-6px) scale(1.03); box-shadow:0 12px 30px rgba(0,0,0,0.14)}
+    .partner figcaption{margin-top:8px; font-size:14px; color:var(--muted); text-align:center; font-weight:600}
+    @media(max-width:600px){ .partner{width:120px} .partner img{height:64px} .partner figcaption{font-size:13px} }
+
   </style>
 </head>
 <body>
@@ -528,11 +536,22 @@
         <div class="muted-small">Institutions et organisations partenaires</div>
       </div>
 
-      <div class="card center" style="display:flex; gap:20px; align-items:center; justify-content:center; flex-wrap:wrap">
-        <img src="assets/partner1.jpeg" alt="Partenaire 1" style="height:48px; opacity:0.9">
-        <img src="assets/partner2.png" alt="Partenaire 2" style="height:48px; opacity:0.9">
-        <img src="assets/partner3.jpeg" alt="Partenaire 3" style="height:48px; opacity:0.9">
-      </div>
+        <div class="card center partners">
+          <figure class="partner">
+            <img src="assets/partner1.jpeg" alt="Ministère de l'Environnement" />
+            <figcaption>Ministère de l'Environnement</figcaption>
+          </figure>
+
+          <figure class="partner">
+            <img src="assets/partner2.png" alt="Ministère de la Santé" />
+            <figcaption>Ministère de la Santé</figcaption>
+          </figure>
+
+          <figure class="partner">
+            <img src="assets/partner3.jpeg" alt="Ministère de la Sécurité" />
+            <figcaption>Ministère de la Sécurité</figcaption>
+          </figure>
+        </div>
     </section>
 
     <!-- Contact -->
