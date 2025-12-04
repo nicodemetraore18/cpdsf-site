@@ -125,8 +125,14 @@
     }
 
     /* Coordinator badge image */
-    .coord-img{width:96px; height:96px; border-radius:50%; object-fit:cover; display:block; margin:0 auto 8px}
+    .coord-img{width:96px; height:96px; border-radius:50%; object-fit:cover; display:block; margin:0 auto 8px; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,0.12)}
     @media(max-width:880px){ .coord-img{width:72px; height:72px; margin-bottom:10px} }
+
+    /* Image lightbox modal */
+    .img-modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(3,6,6,0.75); z-index:2500}
+    .img-modal.open{display:flex}
+    .img-modal img{max-width:92%; max-height:86%; border-radius:8px; box-shadow:0 18px 40px rgba(0,0,0,0.6)}
+    .img-modal .close-btn{position:absolute; right:18px; top:18px; background:transparent; color:#fff; border:0; font-size:22px; cursor:pointer}
 
     /* ---------- Main layout ---------- */
     main{max-width:var(--container); margin:36px auto; padding:0 20px}
@@ -630,6 +636,12 @@
       <button id="openApplePlayer" class="audio-toggle" aria-pressed="false" aria-label="Afficher le player">🎵 Musique</button>
   </div>
 
+    <!-- Image modal for coordinator photo -->
+    <div id="coordModal" class="img-modal" role="dialog" aria-modal="true" aria-label="Photo du coordonnateur">
+      <button class="close-btn" aria-label="Fermer la photo">✕</button>
+      <img src="" alt="">
+    </div>
+
   <script>
     // Small helpers: menu toggle, smooth scroll, modal open/close, contact handler
     document.getElementById('year').innerText = new Date().getFullYear();
@@ -693,6 +705,30 @@
       });
       // initialize
       update();
+    })();
+
+    // Coordinator image lightbox
+    (function(){
+      const coordImg = document.querySelector('.coord-img');
+      const modal = document.getElementById('coordModal');
+      if(!coordImg || !modal) return;
+      const modalImg = modal.querySelector('img');
+      const closeBtn = modal.querySelector('.close-btn');
+
+      coordImg.addEventListener('click', ()=>{
+        modalImg.src = coordImg.src;
+        modalImg.alt = coordImg.alt || 'Photo du coordonnateur';
+        modal.classList.add('open');
+        // focus for accessibility
+        closeBtn.focus();
+      });
+
+      function closeModal(){ modal.classList.remove('open'); modalImg.src = ''; }
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e)=>{ if(e.target === modal) closeModal(); });
+      modal.querySelector('img').addEventListener('click', (e)=>{ e.stopPropagation(); });
+      document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
     })();
   </script>
 
