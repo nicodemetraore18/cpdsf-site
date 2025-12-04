@@ -637,10 +637,13 @@
   <div id="autoplayPrompt" role="dialog" aria-modal="true">
     <div class="card">
       <h3>Lecture automatique</h3>
-      <p>Le navigateur empêche parfois la lecture automatique. Appuyez sur le bouton ci‑dessous pour démarrer 30 secondes de musique.</p>
-      <button id="start30">Démarrer 30s</button>
+      <p>Le navigateur empêche parfois la lecture automatique. Voulez‑vous activer la musique en arrière‑plan ?</p>
+      <button id="start30">Oui, activer la musique</button>
     </div>
   </div>
+
+  <!-- Floating control for background audio (local) -->
+  <button id="audioControl" class="audio-toggle" hidden aria-pressed="false" aria-label="Contrôle musique">⏸️ Musique</button>
 
   <script>
     // Small helpers: menu toggle, smooth scroll, modal open/close, contact handler
@@ -725,14 +728,15 @@
         audio.currentTime = 0;
         const p = audio.play();
         if(p !== undefined){
-          p.then(()=>{ // autoplay allowed
-            stopAfter30();
-            // hide prompt if visible
-            if(prompt) prompt.style.display = 'none';
-          }).catch(()=>{
-            // autoplay blocked -> show prompt so user can start manually
-            if(prompt) prompt.style.display = 'flex';
-          });
+              p.then(()=>{ // autoplay allowed
+                // autoplay succeeded — show control so user can pause
+                const ctrl = document.getElementById('audioControl');
+                if(ctrl){ ctrl.hidden = false; ctrl.setAttribute('aria-pressed','true'); ctrl.textContent = '⏸️ Musique'; }
+                if(prompt) prompt.style.display = 'none';
+              }).catch(()=>{
+                // autoplay blocked -> show prompt so user can start manually
+                if(prompt) prompt.style.display = 'flex';
+              });
         } else {
           // older browsers: show prompt
           if(prompt) prompt.style.display = 'flex';
@@ -747,12 +751,28 @@
       // Try on load
       window.addEventListener('load', tryAutoplay);
 
-      // Start button handler
+      // Start button handler: user chooses to enable background music (loop)
       if(startBtn){ startBtn.addEventListener('click', ()=>{
-        prompt.style.display = 'none';
+        if(prompt) prompt.style.display = 'none';
         audio.currentTime = 0;
-        audio.play().then(()=>{ stopAfter30(); }).catch(()=>{ alert('Impossible de lire la musique — vérifiez les permissions du navigateur.'); });
+        audio.loop = true;
+        audio.play().then(()=>{
+          const ctrl = document.getElementById('audioControl');
+          if(ctrl){ ctrl.hidden = false; ctrl.setAttribute('aria-pressed','true'); ctrl.textContent = '⏸️ Musique'; }
+        }).catch(()=>{ alert('Impossible de lire la musique — vérifiez les permissions du navigateur.'); });
       }); }
+
+      // Audio control toggle (play / pause)
+      const audioCtrl = document.getElementById('audioControl');
+      if(audioCtrl){
+        audioCtrl.addEventListener('click', ()=>{
+          if(audio.paused){
+            audio.play().then(()=>{ audioCtrl.textContent = '⏸️ Musique'; audioCtrl.setAttribute('aria-pressed','true'); }).catch(()=>{ alert('Lecture impossible. Interagissez avec la page.'); });
+          } else {
+            audio.pause(); audioCtrl.textContent = '▶︎ Musique'; audioCtrl.setAttribute('aria-pressed','false');
+          }
+        });
+      }
     })();
   </script>
 
